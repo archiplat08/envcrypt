@@ -29,6 +29,21 @@ class MergeResult:
     added_keys: List[str] = field(default_factory=list)
     removed_keys: List[str] = field(default_factory=list)
 
+    @property
+    def has_conflicts(self) -> bool:
+        """Return True if any conflicting keys were encountered during merge."""
+        return bool(self.conflicts)
+
+    def summary(self) -> str:
+        """Return a human-readable summary of the merge result."""
+        lines = [
+            f"Merged keys : {len(self.merged)}",
+            f"Added       : {len(self.added_keys)} {self.added_keys}",
+            f"Removed     : {len(self.removed_keys)} {self.removed_keys}",
+            f"Conflicts   : {len(self.conflicts)} {self.conflicts}",
+        ]
+        return "\n".join(lines)
+
 
 def merge_envs(
     base: Dict[str, str],
