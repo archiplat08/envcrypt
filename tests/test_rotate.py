@@ -85,5 +85,14 @@ def test_cli_rotate_run_error(mock_rotate, runner, vault_file, identity_file):
         rotate,
         ["run", str(vault_file), "--identity", str(identity_file)],
     )
-    assert result.exit_code != 0
+    assert result.exit_code
+
+
+@patch("envcrypt.cli_rotate.rotate_vault", side_effect=RotationError("no recipients"))
+def test_cli_rotate_run_error_message(mock_rotate, runner, vault_file, identity_file):
+    """Ensure the CLI surfaces the RotationError message to the user."""
+    result = runner.invoke(
+        rotate,
+        ["run", str(vault_file), "--identity", str(identity_file)],
+    )
     assert "no recipients" in result.output
