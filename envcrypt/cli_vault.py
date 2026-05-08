@@ -25,6 +25,11 @@ def vault():
 )
 def encrypt_cmd(env_file, output, recipients_file):
     """Encrypt ENV_FILE using recipients from the recipients file."""
+    if not Path(recipients_file).exists():
+        raise click.ClickException(
+            f"Recipients file '{recipients_file}' not found. "
+            "Add recipients with: envcrypt keys add"
+        )
     recipients = load_recipients(recipients_file)
     if not recipients:
         raise click.ClickException(
