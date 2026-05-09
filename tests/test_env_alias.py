@@ -92,3 +92,21 @@ def test_resolve_alias_returns_real_key(vault_file: Path) -> None:
 
 def test_resolve_alias_returns_name_when_no_alias(vault_file: Path) -> None:
     assert resolve_alias(vault_file, "UNKNOWN_KEY") == "UNKNOWN_KEY"
+
+
+def test_set_alias_multiple_entries_preserved(vault_file: Path) -> None:
+    """Adding a new alias should not remove previously set aliases."""
+    set_alias(vault_file, "pw", "DB_PASSWORD")
+    set_alias(vault_file, "token", "API_TOKEN")
+    aliases = load_aliases(vault_file)
+    assert aliases == {"pw": "DB_PASSWORD", "token": "API_TOKEN"}
+
+
+def test_remove_alias_preserves_other_entries(vault_file: Path) -> None:
+    """Removing one alias should leave the remaining aliases intact."""
+    set_alias(vault_file, "pw", "DB_PASSWORD")
+    set_alias(vault_file, "token", "API_TOKEN")
+    remove_alias(vault_file, "pw")
+    aliases = load_aliases(vault_file)
+    assert "pw" not in aliases
+    assert aliases["token"] == "API_TOKEN"
