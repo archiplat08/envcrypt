@@ -33,13 +33,25 @@ def export() -> None:
     default=None,
     help="Write output to file instead of stdout.",
 )
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="Overwrite the output file if it already exists.",
+)
 def run_cmd(
     vault: Path,
     identity: Path,
     fmt: str,
     output_path: Path | None,
+    overwrite: bool,
 ) -> None:
     """Decrypt VAULT with IDENTITY and print env vars in the chosen format."""
+    if output_path is not None and output_path.exists() and not overwrite:
+        raise click.ClickException(
+            f"Output file '{output_path}' already exists. Use --overwrite to replace it."
+        )
+
     try:
         rendered = export_vault(
             vault_path=vault,
