@@ -60,3 +60,9 @@ def generate_cmd(
         click.echo(f"Template written to {out_path}")
     except TemplateError as exc:
         raise click.ClickException(str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise click.ClickException(f"File not found: {exc.filename}") from exc
+    except PermissionError as exc:
+        raise click.ClickException(
+            f"Permission denied writing to output path: {exc.filename}"
+        ) from exc
